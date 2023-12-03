@@ -2,7 +2,6 @@ package daycode
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"sort"
@@ -49,7 +48,6 @@ func processLine(line string, wg *sync.WaitGroup, results chan<- int) {
 		_, err := strconv.Atoi(char)
 		if err == nil {
 			digit := LineDigit{Position: pos, Value: int(char[0]) - 48}
-			fmt.Printf("digit: %v\n", digit)
 			digits = append(digits, digit)
 		}
 	}
