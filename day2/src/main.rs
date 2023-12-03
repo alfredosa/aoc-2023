@@ -1,8 +1,8 @@
 mod day_code;
 
-use day_code::read_input;
+use day_code::day_result;
 
 fn main() {
     println!("Hello, world!");
-    let file = read_input("data.txt".to_string());
+    println!("RESTULT {}", day_result("data/data.txt".to_string()));
 }
