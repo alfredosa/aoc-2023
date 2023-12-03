@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -40,18 +41,33 @@ func DayResult(path string) string {
 
 func processLine(line string, wg *sync.WaitGroup, results chan<- int) {
 	defer wg.Done()
-	var digits []string
+	var digits []LineDigit
+	stringdigits := findStringDigit(line)
+
 	sep := strings.Split(line, "")
 	for pos, char := range sep {
 		_, err := strconv.Atoi(char)
 		if err == nil {
 			digit := LineDigit{Position: pos, Value: int(char[0]) - 48}
-			fmt.Println(digit)
-			digits = append(digits, char)
+			fmt.Printf("digit: %v\n", digit)
+			digits = append(digits, digit)
 		}
 	}
-	doubleDigit, _ := strconv.Atoi(digits[0] + digits[len(digits)-1])
-	results <- doubleDigit
+
+	finalDigits := append(digits, stringdigits...)
+	sort.Slice(finalDigits, func(i, j int) bool {
+		return finalDigits[i].Position < finalDigits[j].Position
+	})
+
+	if len(finalDigits) > 0 {
+		firstValue := finalDigits[0].Value
+		lastValue := finalDigits[len(finalDigits)-1].Value
+		value, err := strconv.Atoi(strconv.Itoa(firstValue) + strconv.Itoa(lastValue))
+		if err != nil {
+			log.Fatalf("Failed to convert string to integer: %v", err)
+		}
+		results <- value
+	}
 }
 
 func readInput(path string) []string {
@@ -99,7 +115,7 @@ func findStringDigit(line string) []LineDigit {
 
 func IndexOfSubstring(str, subStr string) []int {
 	var occurrences []int
-	for i := 0; i < len(str); i++ {
+	for i := 0; i <= len(str)-len(subStr); i++ {
 		if str[i:i+len(subStr)] == subStr {
 			occurrences = append(occurrences, i)
 		}
